@@ -1,0 +1,15 @@
+# Environment / secrets
+.env
+.env.local
+*.local
+
+# n8n local config (may contain API keys)
+.claude/
+*.local.json
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
