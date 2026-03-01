@@ -1,15 +1,15 @@
 # AI Job Alerts — Automated PM Role Monitor
 
-> Daily automated scan of 97 company career pages for senior AI Product Management roles. Filters ~13,000 raw job postings down to scored, prioritised matches and delivers a Slack digest every morning.
+> Daily automated scan of 96 company career pages for senior AI Product Management roles. Filters ~13,000 raw job postings down to scored, prioritised matches and delivers a Slack digest every morning.
 
 ---
 
 ## Stats
 
 | Metric | Value |
-|---|---|
-| Companies monitored | 97 across 4 ATS platforms |
-| ATS breakdown | 41 Greenhouse · 2 Lever · 21 Ashby · 33 Adzuna |
+| --- | --- |
+| Companies monitored | 96 across 4 ATS platforms |
+| ATS breakdown | 43 Greenhouse · 2 Lever · 21 Ashby · 30 Adzuna |
 | Raw jobs fetched daily | ~13,000+ |
 | After PM pre-filter | ~500 candidates |
 | After full filter + scoring | varies (typically 10–60 matched roles) |
@@ -20,7 +20,7 @@
 
 ## What It Does
 
-1. **Fetches** all open roles from 97 companies via their ATS APIs (Greenhouse, Lever, Ashby) and the Adzuna Jobs API for companies without a public ATS
+1. **Fetches** all open roles from 96 companies via their ATS APIs (Greenhouse, Lever, Ashby) and the Adzuna Jobs API for companies without a public ATS
 2. **Filters** ~13,000 raw jobs through a two-stage keyword pipeline down to PM-relevant matches
 3. **Scores** each match on location priority (EU/remote-EU = P1, US/remote-US = P2, on-site US/other = P3) and seniority/AI signal
 4. **Deduplicates** against a Google Sheet log — only genuinely new roles trigger an alert
@@ -38,15 +38,15 @@ flowchart TD
     B["🖱️ Manual Trigger"] --> C
 
     subgraph FETCH ["Fetch Phase (~3.5 min)"]
-        C["Company List\n41 GH · 2 Lever · 21 Ashby · 33 Adzuna"]
+        C["Company List\n43 GH · 2 Lever · 21 Ashby · 30 Adzuna"]
         D["Fetch GH Batch 1\ncompanies 1–20  (~30s)"]
-        E["Fetch GH Batch 2\ncompanies 21–41  (~35s)"]
+        E["Fetch GH Batch 2\ncompanies 21–43  (~37s)"]
         F["Fetch Lever + Ashby B1\n2 + 10 companies  (~32s)"]
         G["Fetch Ashby Batch 2\ncompanies 11–21  (~8s)"]
         H["⚡ Pre-Filter Jobs\n~10,000 → ~500  (<1s)"]
         I["Fetch Adzuna US-1\ncompanies 1–17  (~38s)"]
         J["Fetch Adzuna US-2\ncompanies 18–33  (~22s)"]
-        K["Fetch Adzuna GB\nall 33 companies  (~45s)"]
+        K["Fetch Adzuna GB\nall 30 companies  (~45s)"]
         C --> D --> E --> F --> G --> H --> I --> J --> K
     end
 
@@ -124,7 +124,7 @@ Each matched role gets a `P1 / P2 / P3` priority and a `match_score` (50–100).
 ### Location Priority
 
 | Priority | Condition |
-|---|---|
+| --- | --- |
 | **P1** | Remote or hybrid + EU/UK/Israel location |
 | **P1** | France-based (any work mode) |
 | **P2** | Remote or hybrid + US location |
@@ -134,7 +134,7 @@ Each matched role gets a `P1 / P2 / P3` priority and a `match_score` (50–100).
 ### Match Score (50–100)
 
 | Signal | Points |
-|---|---|
+| --- | --- |
 | Base | 50 |
 | Head of / VP / Director in title | +15 |
 | Staff / Principal / Lead in title | +10 |
@@ -162,7 +162,7 @@ n8n's Google Sheets node returns **0 items** when the sheet is empty. In n8n, 0 
 
 ### Why Adzuna for big tech?
 
-Google, Meta, Microsoft, Apple, etc. don't expose a public ATS API. Adzuna's jobs search API allows filtering by company name, giving coverage for ~33 additional companies. The trade-off is lower precision (Adzuna results are noisier than direct ATS feeds) and a `what_or=product+growth+cpo` pre-filter at the API level.
+Google, Meta, Microsoft, Apple, etc. don't expose a public ATS API. Adzuna's jobs search API allows filtering by company name, giving coverage for ~30 additional companies. The trade-off is lower precision (Adzuna results are noisier than direct ATS feeds) and a `what_or=product+growth+cpo` pre-filter at the API level.
 
 ---
 
@@ -180,7 +180,7 @@ Google, Meta, Microsoft, Apple, etc. don't expose a public ATS API. Adzuna's job
 Copy `.env.example` and fill in your values. In n8n Cloud, these are set as workflow-level variables or directly in node code.
 
 | Variable | Description |
-|---|---|
+| --- | --- |
 | `ADZUNA_APP_ID` | Adzuna API app ID |
 | `ADZUNA_APP_KEY` | Adzuna API app key |
 | `SLACK_WEBHOOK_URL` | Slack incoming webhook URL |
@@ -208,18 +208,18 @@ AI Keywords | Department | Compensation | Notes
 ## Node Reference
 
 | # | Node | Type | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Schedule Trigger | Trigger | 8am daily |
 | 2 | Manual Trigger | Trigger | On-demand testing |
 | 3 | Company List | Code | Outputs 4 arrays: greenhouse / lever / ashby / adzuna |
 | 4 | Fetch GH Batch 1 | Code | Greenhouse companies 1–20, pre-computes `ai_in_desc` |
-| 5 | Fetch GH Batch 2 | Code | Greenhouse companies 21–41 |
+| 5 | Fetch GH Batch 2 | Code | Greenhouse companies 21–43 |
 | 6 | Fetch Lever + Ashby B1 | Code | Lever (2) + Ashby (1–10) |
 | 7 | Fetch Ashby Batch 2 | Code | Ashby (11–21) |
 | 8 | Pre-Filter Jobs | Code | Memory firewall: ~10k → ~500 |
 | 9 | Fetch Adzuna US-1 | Code | Adzuna companies 1–17, US only |
-| 10 | Fetch Adzuna US-2 | Code | Adzuna companies 18–33, US only |
-| 11 | Fetch Adzuna GB | Code | All 33 Adzuna companies, GB only |
+| 10 | Fetch Adzuna US-2 | Code | Adzuna companies 18–30, US only |
+| 11 | Fetch Adzuna GB | Code | All 30 Adzuna companies, GB only |
 | 12 | Filter PM Roles | Code | Full keyword matching |
 | 13 | Score Priority & Match | Code | Location priority + match score |
 | 14 | Read Existing Jobs | Google Sheets | Reads Sheet1 |
@@ -236,9 +236,9 @@ AI Keywords | Department | Compensation | Notes
 
 ## Stack
 
-- **[n8n](https://n8n.io)** — workflow automation platform
+- [**n8n**](https://n8n.io) — workflow automation platform
 - **Greenhouse / Lever / Ashby** — ATS platforms with public job board APIs (no auth required)
-- **[Adzuna Jobs API](https://developer.adzuna.com)** — job search API covering companies without public ATS
+- [**Adzuna Jobs API**](https://developer.adzuna.com) — job search API covering companies without public ATS
 - **Google Sheets** — deduplication log and job tracker
 - **Slack Incoming Webhooks** — daily alert delivery
 

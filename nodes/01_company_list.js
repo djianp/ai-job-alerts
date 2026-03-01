@@ -45,6 +45,8 @@ const GREENHOUSE_COMPANIES = [
   { name: 'Wayve', token: 'wayve' },
   { name: 'Webflow', token: 'webflow' },
   { name: 'Dataiku', token: 'dataiku' },
+  { name: 'LinkedIn', token: 'linkedin' },   // moved from Adzuna Mar 2026 (53 jobs)
+  { name: 'ZoomInfo', token: 'zoominfo' },   // added Mar 2026 (71 jobs)
 ];
 
 const LEVER_COMPANIES = [
@@ -76,35 +78,35 @@ const ASHBY_COMPANIES = [
   { name: 'Snyk', token: 'snyk' },
 ];
 
-// Adzuna is used for big tech companies that don't expose a public ATS API
-// (Google, Meta, Microsoft, etc.) — queried by company name.
+// Adzuna is used for big tech + companies without a public ATS API.
+// IMPORTANT: `name` must match Adzuna's internal taxonomy name (used in the
+// `company=` API parameter). `displayName` is shown in Sheet/Slack instead.
+// These differ for companies where Adzuna's taxonomy name ≠ brand name.
+// Removed: LinkedIn (moved to Greenhouse), Workday (proprietary HCM), Atlassian (iCIMS).
 const ADZUNA_COMPANIES = [
   // Big Tech
   { name: 'Google' },
-  { name: 'Meta' },
+  { name: 'Facebook', displayName: 'Meta' },
   { name: 'Microsoft' },
   { name: 'Amazon' },
   { name: 'Apple' },
-  { name: 'Adobe' },
+  { name: 'Adobe Systems', displayName: 'Adobe' },
   { name: 'NVIDIA' },
   { name: 'IBM' },
   { name: 'Intuit' },
-  { name: 'LinkedIn' },
-  { name: 'Salesforce' },
+  { name: 'Salesforce.com', displayName: 'Salesforce' },
   { name: 'ServiceNow' },
   { name: 'ByteDance' },
-  { name: 'Workday' },
   { name: 'Oracle' },
   // Other / Custom ATS
   { name: 'Airbnb' },
-  { name: 'Atlassian' },
-  { name: 'Block' },
+  { name: 'Square', displayName: 'Block' },
   { name: 'Booking.com' },
   { name: 'Deliveroo' },
   { name: 'Expedia' },
   { name: 'Klarna' },
   { name: 'Netflix' },
-  { name: 'Palantir' },
+  { name: 'Palantir Technologies', displayName: 'Palantir' },
   { name: 'Revolut' },
   { name: 'Shopify' },
   { name: 'Zendesk' },
@@ -115,6 +117,8 @@ const ADZUNA_COMPANIES = [
   { name: 'Typeform' },
   { name: 'UiPath' },
 ];
+// 30 Adzuna companies (was 33 — LinkedIn moved to GH, Workday + Atlassian removed Mar 2026)
+// US-1 node: slice(0, 17) | US-2 node: slice(17) | GB node: all
 
 return [{
   json: {
