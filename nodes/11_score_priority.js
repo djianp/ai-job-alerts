@@ -35,7 +35,7 @@ const US_EAST_COAST = [
   'east coast', 'pittsburgh',
 ];
 
-const REMOTE_KEYWORDS = ['remote', 'anywhere', 'distributed', 'work from home', 'wfh'];
+const REMOTE_KEYWORDS = ['remote', 'anywhere', 'distributed', 'work from home', 'wfh', 'worldwide', 'global', 'open location'];
 const HYBRID_KEYWORDS = ['hybrid', 'flexible'];
 
 for (const job of jobs) {

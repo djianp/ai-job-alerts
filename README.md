@@ -37,23 +37,25 @@ flowchart TD
     A["⏰ Schedule Trigger\n8am daily / Europe/Paris"] --> C
     B["🖱️ Manual Trigger"] --> C
 
-    subgraph FETCH ["Fetch Phase (~3.5 min)"]
+    subgraph FETCH ["Fetch Phase (~4.5 min)"]
         C["Company List\n43 GH · 2 Lever · 21 Ashby · 30 Adzuna"]
         D["Fetch GH Batch 1\ncompanies 1–20  (~30s)"]
         E["Fetch GH Batch 2\ncompanies 21–43  (~37s)"]
         F["Fetch Lever + Ashby B1\n2 + 10 companies  (~32s)"]
         G["Fetch Ashby Batch 2\ncompanies 11–21  (~8s)"]
         H["⚡ Pre-Filter Jobs\n~10,000 → ~500  (<1s)"]
-        I["Fetch Adzuna US-1\ncompanies 1–17  (~38s)"]
-        J["Fetch Adzuna US-2\ncompanies 18–33  (~22s)"]
-        K["Fetch Adzuna GB\nall 30 companies  (~45s)"]
-        C --> D --> E --> F --> G --> H --> I --> J --> K
+        I["Fetch Adzuna US-1\ncompanies 1–10  (~15s ∥)"]
+        J["Fetch Adzuna US-2\ncompanies 11–20  (~15s ∥)"]
+        J2["Fetch Adzuna US-3\ncompanies 21–30  (~15s ∥)"]
+        K["Fetch Adzuna GB\nall 30 companies  (~15s ∥)"]
+        EU["Fetch Adzuna EU\n12 companies · FR/DE/NL  (~15s ∥)"]
+        C --> D --> E --> F --> G --> H --> I --> J --> J2 --> K --> EU
     end
 
     subgraph FILTER ["Filter & Score Phase"]
         L["Filter PM Roles\nkeyword matching"]
         M["Score Priority & Match\nlocation + seniority scoring"]
-        K --> L --> M
+        EU --> L --> M
     end
 
     subgraph ALERT ["Deduplicate & Alert Phase"]
@@ -217,20 +219,22 @@ AI Keywords | Department | Compensation | Notes
 | 6 | Fetch Lever + Ashby B1 | Code | Lever (2) + Ashby (1–10) |
 | 7 | Fetch Ashby Batch 2 | Code | Ashby (11–21) |
 | 8 | Pre-Filter Jobs | Code | Memory firewall: ~10k → ~500 |
-| 9 | Fetch Adzuna US-1 | Code | Adzuna companies 1–17, US only |
-| 10 | Fetch Adzuna US-2 | Code | Adzuna companies 18–30, US only |
-| 11 | Fetch Adzuna GB | Code | All 30 Adzuna companies, GB only |
-| 12 | Filter PM Roles | Code | Full keyword matching |
-| 13 | Score Priority & Match | Code | Location priority + match score |
-| 14 | Read Existing Jobs | Google Sheets | Reads Sheet1 |
-| 15 | Sheet Buffer | Code | Guarantees ≥1 item for empty sheet |
-| 16 | Compare & Detect New | Code | Diffs against sheet, builds alert payload |
-| 17 | Any New Jobs? | IF | Routes to alert or heartbeat |
-| 18 | Split into Rows | Code | One item per new job |
-| 19 | Append to Sheet | Google Sheets | Writes new rows to Sheet1 |
-| 20 | Format Slack Alert | Code | Builds Slack message |
-| 21 | No New Jobs (Log) | Code | Builds heartbeat message |
-| 22 | Send Slack Alert | HTTP Request | POST to Slack webhook |
+| 9 | Fetch Adzuna US-1 | Code | Adzuna companies 1–10, US only |
+| 10 | Fetch Adzuna US-2 | Code | Adzuna companies 11–20, US only |
+| 11 | Fetch Adzuna US-3 | Code | Adzuna companies 21–30, US only |
+| 12 | Fetch Adzuna GB | Code | All 30 Adzuna companies, GB only |
+| 13 | Fetch Adzuna EU | Code | 12 EU-relevant companies, FR/DE/NL |
+| 14 | Filter PM Roles | Code | Full keyword matching |
+| 15 | Score Priority & Match | Code | Location priority + match score |
+| 16 | Read Existing Jobs | Google Sheets | Reads Sheet1 |
+| 17 | Sheet Buffer | Code | Guarantees ≥1 item for empty sheet |
+| 18 | Compare & Detect New | Code | Diffs against sheet, builds alert payload |
+| 19 | Any New Jobs? | IF | Routes to alert or heartbeat |
+| 20 | Split into Rows | Code | One item per new job |
+| 21 | Append to Sheet | Google Sheets | Writes new rows to Sheet1 |
+| 22 | Format Slack Alert | Code | Builds Slack message |
+| 23 | No New Jobs (Log) | Code | Builds heartbeat message |
+| 24 | Send Slack Alert | HTTP Request | POST to Slack webhook |
 
 ---
 

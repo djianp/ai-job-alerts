@@ -1,31 +1,41 @@
-// Node: Fetch Adzuna GB (all 30 companies, GB only)
+// Node: Fetch Adzuna EU
 //
-// Queries all 30 Adzuna companies in the GB market.
-// Companies are fetched in parallel (Promise.allSettled) to handle slow API
-// responses (~3-6s each). Pre-computes ai_in_desc and domain_score_from_desc,
-// discards description text to save memory.
+// Queries 12 EU-relevant Adzuna companies in their home markets (FR, DE, NL).
+// Only companies with an `eu_markets` array in the Company List are queried.
+// ~23 API calls total, run in parallel (Promise.allSettled).
+//
+// Same pattern as Fetch Adzuna GB: pre-computes ai_in_desc and
+// domain_score_from_desc, discards description text to save memory.
 
-const usData = $input.first().json;
+const prevData = $input.first().json;
 const adzunaCompanies = $('Company List').first().json.adzuna;
-
-const allJobs = [...usData.jobs];
-const errors = [...usData.errors];
+const allJobs = [...prevData.jobs];
 const prevJobCount = allJobs.length;
-const prevTotalFetched = usData.total_fetched || 0;
+const prevTotalFetched = prevData.total_fetched || 0;
+const errors = [...prevData.errors];
 
-const ADZUNA_APP_ID = 'YOUR_ADZUNA_APP_ID';
-const ADZUNA_APP_KEY = 'YOUR_ADZUNA_APP_KEY';
+const ADZUNA_APP_ID = process.env.ADZUNA_APP_ID;
+const ADZUNA_APP_KEY = process.env.ADZUNA_APP_KEY;
 
 const AI_KW = ['ai ','ai,','ai-','/ai','a.i.','ml ','ml,','ml-','/ml','machine learning','llm','nlp','genai','gen ai','generative ai','generative','agents','agentic','rag','fine-tuning','fine tuning','finetuning','computer vision','deep learning','neural','foundation model','large language','artificial intelligence','chatbot','copilot','prompt','embedding','vector','transformer'];
 const DOMAIN_KW = ['growth','plg','product-led','onboarding','activation','fintech','payments','lending','financial','saas','b2b','enterprise','platform','mobile','consumer','gaming','experimentation','a/b test','conversion','startup','0 to 1','zero to one','multilingual','international','global','stanford','mba'];
 
-const fetchCompany = async (company) => {
+// Flatten company+market pairs into individual tasks
+const euCompanies = adzunaCompanies.filter(c => c.eu_markets && c.eu_markets.length > 0);
+const tasks = [];
+for (const company of euCompanies) {
+  for (const country of company.eu_markets) {
+    tasks.push({ company, country });
+  }
+}
+
+const fetchTask = async ({ company, country }) => {
   const displayName = company.displayName || company.name;
   const jobs = [];
   let warn = null;
   try {
     const baseParams = `app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&what_or=product+growth+cpo&company=${encodeURIComponent(company.name)}&results_per_page=50&sort_by=date`;
-    const url1 = `https://api.adzuna.com/v1/api/jobs/gb/search/1?${baseParams}`;
+    const url1 = `https://api.adzuna.com/v1/api/jobs/${country}/search/1?${baseParams}`;
     const response1 = await this.helpers.httpRequest({ method: 'GET', url: url1, timeout: 10000 });
 
     if (response1 && response1.results) {
@@ -47,7 +57,7 @@ const fetchCompany = async (company) => {
       }
       const totalCount = response1.count || 0;
       if (totalCount > 50) {
-        const url2 = `https://api.adzuna.com/v1/api/jobs/gb/search/2?${baseParams}`;
+        const url2 = `https://api.adzuna.com/v1/api/jobs/${country}/search/2?${baseParams}`;
         const response2 = await this.helpers.httpRequest({ method: 'GET', url: url2, timeout: 10000 });
         if (response2 && response2.results) {
           for (const job of response2.results) {
@@ -68,17 +78,17 @@ const fetchCompany = async (company) => {
           }
         }
         if (totalCount > 100) {
-          warn = `WARN: Adzuna/${displayName}/GB: ${totalCount} total results, only first 100 fetched`;
+          warn = `WARN: Adzuna/${displayName}/${country.toUpperCase()}: ${totalCount} total results, only first 100 fetched`;
         }
       }
     }
     return { jobs, error: null, warn };
   } catch (err) {
-    return { jobs, error: `Adzuna/${displayName}/GB: ${err.message}`, warn };
+    return { jobs, error: `Adzuna/${displayName}/${country.toUpperCase()}: ${err.message}`, warn };
   }
 };
 
-const results = await Promise.allSettled(adzunaCompanies.map(c => fetchCompany(c)));
+const results = await Promise.allSettled(tasks.map(t => fetchTask(t)));
 
 for (const result of results) {
   if (result.status === 'fulfilled') {

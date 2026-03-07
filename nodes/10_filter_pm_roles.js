@@ -3,7 +3,7 @@
 // Full keyword-matching pass over all fetched jobs (~13,000+).
 //
 // A job matches if:
-//   (isProductRole OR isPMAbbrev) AND (isSenior OR hasAISignal)
+//   (isProductRole OR isProductLeader OR isPMAbbrev) AND (isSenior OR hasAISignal)
 //
 // Two description-check paths:
 //   - GH Batch 1 + Adzuna: use pre-computed ai_in_desc boolean (no description stored)
@@ -23,8 +23,14 @@ for (const job of jobs) {
     'vp product', 'vp of product', 'vp, product',
     'director of product', 'director, product',
     'chief product', 'cpo',
+    // Plural and variant forms
+    'head of products', 'director of products', 'director, products',
+    'vp products', 'vp of products', 'vp, products',
   ];
   const isProductRole = PRODUCT_KEYWORDS.some(k => title.includes(k));
+  // Catch leadership titles with modifiers between prefix and "product(s)"
+  // e.g. "Head of AI Products", "Director of Digital Products", "VP, AI Platform & Products"
+  const isProductLeader = /\b(head of|director of|director,|vp,|vp of)\b.{1,25}\bproduct/i.test(title);
 
   const pmPattern = /\b(ai|ml|senior|sr|staff|principal|lead|group|head)\s+pm\b/;
   const isPMAbbrev = pmPattern.test(title);
@@ -57,7 +63,7 @@ for (const job of jobs) {
     title.includes(k) || desc.includes(k)
   ).map(k => k.trim());
 
-  const isMatch = (isProductRole || isPMAbbrev) && (isSenior || hasAISignal);
+  const isMatch = (isProductRole || isProductLeader || isPMAbbrev) && (isSenior || hasAISignal);
 
   if (isMatch) {
     matched.push({

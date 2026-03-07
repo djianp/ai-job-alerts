@@ -85,10 +85,11 @@ const ASHBY_COMPANIES = [
 // Removed: LinkedIn (moved to Greenhouse), Workday (proprietary HCM), Atlassian (iCIMS).
 const ADZUNA_COMPANIES = [
   // Big Tech
-  { name: 'Google' },
-  { name: 'Facebook', displayName: 'Meta' },
-  { name: 'Microsoft' },
-  { name: 'Amazon' },
+  // eu_markets = additional EU country codes queried by "Fetch Adzuna EU" node
+  { name: 'Google', eu_markets: ['fr', 'de', 'nl'] },
+  { name: 'Facebook', displayName: 'Meta', eu_markets: ['fr', 'de'] },
+  { name: 'Microsoft', eu_markets: ['fr', 'de'] },
+  { name: 'Amazon', eu_markets: ['fr', 'de'] },
   { name: 'Apple' },
   { name: 'Adobe Systems', displayName: 'Adobe' },
   { name: 'NVIDIA' },
@@ -101,24 +102,25 @@ const ADZUNA_COMPANIES = [
   // Other / Custom ATS
   { name: 'Airbnb' },
   { name: 'Square', displayName: 'Block' },
-  { name: 'Booking.com' },
-  { name: 'Deliveroo' },
+  { name: 'Booking.com', eu_markets: ['nl'] },
+  { name: 'Deliveroo', eu_markets: ['fr', 'de', 'nl'] },
   { name: 'Expedia' },
-  { name: 'Klarna' },
+  { name: 'Klarna', eu_markets: ['de', 'fr'] },
   { name: 'Netflix' },
   { name: 'Palantir Technologies', displayName: 'Palantir' },
-  { name: 'Revolut' },
+  { name: 'Revolut', eu_markets: ['fr', 'de'] },
   { name: 'Shopify' },
   { name: 'Zendesk' },
   { name: 'Zoom' },
-  { name: 'Adyen' },
-  { name: 'Alan' },
-  { name: 'BlaBlaCar' },
-  { name: 'Typeform' },
+  { name: 'Adyen', eu_markets: ['nl', 'de'] },
+  { name: 'Alan', eu_markets: ['fr'] },
+  { name: 'BlaBlaCar', eu_markets: ['fr'] },
+  { name: 'Typeform', eu_markets: ['fr', 'de'] },
   { name: 'UiPath' },
 ];
 // 30 Adzuna companies (was 33 — LinkedIn moved to GH, Workday + Atlassian removed Mar 2026)
-// US-1 node: slice(0, 17) | US-2 node: slice(17) | GB node: all
+// US-1 node: slice(0, 10) | US-2 node: slice(10, 20) | US-3 node: slice(20) | GB node: all
+// EU node: 12 companies with eu_markets defined (FR/DE/NL, ~23 API calls)
 
 return [{
   json: {

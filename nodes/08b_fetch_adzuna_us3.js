@@ -1,11 +1,7 @@
-// Node: Fetch Adzuna US-1 (companies 1–10, US only)
+// Node: Fetch Adzuna US-3 (companies 21–30, US only)
 //
-// Searches Adzuna for PM-adjacent roles at big tech companies that don't
-// expose a public ATS API. Queries by company name with what_or=product+growth+cpo.
-//
-// Split into US-1, US-2, US-3, and GB to stay within the 60s node timeout.
-// Companies are fetched in parallel (Promise.allSettled) to handle slow API
-// responses (~3-6s each). Each company fetches up to 2 pages (100 results).
+// Continues the Adzuna US fetch for the remaining 10 companies.
+// Same parallel pattern as US-1; split to stay within the 60s node timeout.
 
 const atsData = $input.first().json;
 const adzunaCompanies = $('Company List').first().json.adzuna;
@@ -15,8 +11,8 @@ const errors = [...atsData.errors];
 const prevJobCount = allJobs.length;
 const prevTotalFetched = atsData.total_fetched;
 
-const ADZUNA_APP_ID = 'YOUR_ADZUNA_APP_ID';   // replace with your app ID
-const ADZUNA_APP_KEY = 'YOUR_ADZUNA_APP_KEY'; // replace with your app key
+const ADZUNA_APP_ID = 'YOUR_ADZUNA_APP_ID';
+const ADZUNA_APP_KEY = 'YOUR_ADZUNA_APP_KEY';
 
 const fetchCompany = async (company) => {
   const displayName = company.displayName || company.name;
@@ -73,7 +69,7 @@ const fetchCompany = async (company) => {
   }
 };
 
-const companies = adzunaCompanies.slice(0, 10);
+const companies = adzunaCompanies.slice(20);
 const results = await Promise.allSettled(companies.map(c => fetchCompany(c)));
 
 for (const result of results) {
