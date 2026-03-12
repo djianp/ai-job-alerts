@@ -88,7 +88,22 @@ const fetchTask = async ({ company, country }) => {
   }
 };
 
-const results = await Promise.allSettled(tasks.map(t => fetchTask(t)));
+const fetchWithRetry = async (task) => {
+  const result = await fetchTask(task);
+  if (result.error && result.error.includes('429')) {
+    await new Promise(r => setTimeout(r, 2000));
+    return await fetchTask(task);
+  }
+  return result;
+};
+
+const STAGGER_MS = 750;
+const results = await Promise.allSettled(
+  tasks.map((t, i) =>
+    new Promise(resolve => setTimeout(resolve, i * STAGGER_MS))
+      .then(() => fetchWithRetry(t))
+  )
+);
 
 for (const result of results) {
   if (result.status === 'fulfilled') {

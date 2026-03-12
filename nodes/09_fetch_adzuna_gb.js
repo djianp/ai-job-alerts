@@ -78,7 +78,22 @@ const fetchCompany = async (company) => {
   }
 };
 
-const results = await Promise.allSettled(adzunaCompanies.map(c => fetchCompany(c)));
+const fetchWithRetry = async (company) => {
+  const result = await fetchCompany(company);
+  if (result.error && result.error.includes('429')) {
+    await new Promise(r => setTimeout(r, 2000));
+    return await fetchCompany(company);
+  }
+  return result;
+};
+
+const STAGGER_MS = 750;
+const results = await Promise.allSettled(
+  adzunaCompanies.map((c, i) =>
+    new Promise(resolve => setTimeout(resolve, i * STAGGER_MS))
+      .then(() => fetchWithRetry(c))
+  )
+);
 
 for (const result of results) {
   if (result.status === 'fulfilled') {
