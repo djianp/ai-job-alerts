@@ -34,40 +34,40 @@
 
 ```mermaid
 flowchart TD
-    A["⏰ Schedule Trigger\n8am daily / Europe/Paris"] --> C
+    A["⏰ Schedule Trigger<br>8am daily / Europe/Paris"] --> C
     B["🖱️ Manual Trigger"] --> C
 
     subgraph FETCH ["Fetch Phase (~4.5 min)"]
-        C["Company List\n43 GH · 2 Lever · 21 Ashby · 30 Adzuna"]
-        D["Fetch GH Batch 1\ncompanies 1–20  (~30s)"]
-        E["Fetch GH Batch 2\ncompanies 21–43  (~37s)"]
-        F["Fetch Lever + Ashby B1\n2 + 10 companies  (~32s)"]
-        G["Fetch Ashby Batch 2\ncompanies 11–21  (~8s)"]
-        H["⚡ Pre-Filter Jobs\n~10,000 → ~500  (<1s)"]
-        I["Fetch Adzuna US-1\ncompanies 1–10  (~15s ∥)"]
-        J["Fetch Adzuna US-2\ncompanies 11–20  (~15s ∥)"]
-        J2["Fetch Adzuna US-3\ncompanies 21–30  (~15s ∥)"]
-        K["Fetch Adzuna GB\nall 30 companies  (~15s ∥)"]
-        EU["Fetch Adzuna EU\n12 companies · FR/DE/NL  (~15s ∥)"]
+        C["Company List<br>43 GH · 2 Lever · 21 Ashby · 30 Adzuna"]
+        D["Fetch GH Batch 1<br>companies 1–20  (~30s)"]
+        E["Fetch GH Batch 2<br>companies 21–43  (~37s)"]
+        F["Fetch Lever + Ashby B1<br>2 + 10 companies  (~32s)"]
+        G["Fetch Ashby Batch 2<br>companies 11–21  (~8s)"]
+        H["⚡ Pre-Filter Jobs<br>~10,000 → ~500  (<1s)"]
+        I["Fetch Adzuna US-1<br>companies 1–10  (~15s ∥)"]
+        J["Fetch Adzuna US-2<br>companies 11–20  (~15s ∥)"]
+        J2["Fetch Adzuna US-3<br>companies 21–30  (~15s ∥)"]
+        K["Fetch Adzuna GB<br>all 30 companies  (~15s ∥)"]
+        EU["Fetch Adzuna EU<br>12 companies · FR/DE/NL  (~15s ∥)"]
         C --> D --> E --> F --> G --> H --> I --> J --> J2 --> K --> EU
     end
 
     subgraph FILTER ["Filter & Score Phase"]
-        L["Filter PM Roles\nkeyword matching"]
-        M["Score Priority & Match\nlocation + seniority scoring"]
+        L["Filter PM Roles<br>keyword matching"]
+        M["Score Priority & Match<br>location + seniority scoring"]
         EU --> L --> M
     end
 
     subgraph ALERT ["Deduplicate & Alert Phase"]
-        N["Read Existing Jobs\nGoogle Sheets"]
-        O["Sheet Buffer\nguarantees ≥1 item"]
-        P["Compare & Detect New\ndiff against sheet"]
+        N["Read Existing Jobs<br>Google Sheets"]
+        O["Sheet Buffer<br>guarantees ≥1 item"]
+        P["Compare & Detect New<br>diff against sheet"]
         Q{"Any New Jobs?"}
         R["Split into Rows"]
         S["Append to Sheet"]
         T["Format Slack Alert"]
         U["Send Slack Alert"]
-        V["No New Jobs (Log)\nheartbeat message"]
+        V["No New Jobs (Log)<br>heartbeat message"]
         M --> N --> O --> P --> Q
         Q -->|"Yes"| R --> S
         Q -->|"Yes"| T --> U
