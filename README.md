@@ -6,6 +6,8 @@
 
 > Daily automated scan of 96 company career pages for senior AI Product Management roles. Filters ~13,000 raw job postings down to scored, prioritised matches and delivers a Slack digest every morning.
 
+> 📖 **New here?** [**HOW-IT-WORKS.md**](HOW-IT-WORKS.md) is a plain-language tour of the whole system — the architecture, why it's built this way, and the bugs we hit and fixed along the way.
+
 ---
 
 ## Stats
