@@ -13,3 +13,6 @@
 # Editor
 .vscode/
 .idea/
+
+# Personal drafts / generated docs — keep out of the public mirror
+*.docx
