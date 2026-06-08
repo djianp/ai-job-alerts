@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="AI Job Alerts — 96 company career pages scanned daily into scored AI Product Management roles, delivered as a Slack digest" width="100%">
+</p>
+
 # AI Job Alerts — Automated PM Role Monitor
 
 > Daily automated scan of 96 company career pages for senior AI Product Management roles. Filters ~13,000 raw job postings down to scored, prioritised matches and delivers a Slack digest every morning.
